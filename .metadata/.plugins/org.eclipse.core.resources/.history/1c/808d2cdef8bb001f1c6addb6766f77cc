@@ -1,0 +1,20 @@
+package main;
+
+import db.Database;
+
+public class App {
+    public static void main(String[] args) {
+        // Veritabanı bağlantısını başlat
+        Database db = Database.getInstance();
+
+        // CRUD işlemleri örnekleri
+        db.addNote("First Note", "This is the content of the first note.");
+        db.addNote("Second Note", "This is the content of the second note.");
+
+        // Notları yazdır
+        db.getNotes().forEach(System.out::println);
+
+        // Veritabanı bağlantısını kapat
+        db.close();
+    }
+}

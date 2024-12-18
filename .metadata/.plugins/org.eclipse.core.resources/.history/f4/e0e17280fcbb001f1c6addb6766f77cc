@@ -1,0 +1,111 @@
+package main;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class App extends Application {
+    
+    private NoteDao noteDao = new NoteDao();  // Notların veritabanına erişimi sağlayan DAO
+    private TextField idTextField = new TextField();  // ID'yi girecek alan
+    private TextField noteTextField = new TextField();  // Notu girecek alan
+    private ListView<String> notesListView = new ListView<>();  // Notları listeleyecek ListView
+
+    @Override
+    public void start(Stage primaryStage) {
+        VBox vbox = new VBox(10);
+        
+        Label idLabel = new Label("ID (Güncelle veya Silmek için):");
+        Label noteLabel = new Label("Not:");
+        
+        Button addButton = new Button("Not Ekle");
+        Button updateButton = new Button("Not Güncelle");
+        Button deleteButton = new Button("Not Sil");
+        
+        // ID ve Not alanlarını yerleştir
+        vbox.getChildren().addAll(idLabel, idTextField, noteLabel, noteTextField, addButton, updateButton, deleteButton, notesListView);
+        
+        addButton.setOnAction(event -> addNote());
+        updateButton.setOnAction(event -> updateNote());
+        deleteButton.setOnAction(event -> deleteNote());
+
+        // İlk başta veritabanındaki notları listele
+        refreshNotes();
+
+        Scene scene = new Scene(vbox, 400, 400);
+        primaryStage.setTitle("Not Defteri Uygulaması");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private void addNote() {
+        String noteContent = noteTextField.getText();
+        if (noteContent.isEmpty()) {
+            System.out.println("Lütfen geçerli bir not girin.");
+            return;
+        }
+        
+        // Yeni notu veritabanına ekle
+        Note newNote = new Note(noteContent);
+        noteDao.add(newNote);
+        System.out.println("Not eklendi!");
+        refreshNotes();  // Güncellenmiş notları listele
+    }
+
+    private void updateNote() {
+        String idInput = idTextField.getText();  // Kullanıcıdan ID'yi al
+        if (idInput.isEmpty()) {
+            System.out.println("Lütfen geçerli bir ID girin.");
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(idInput);  // ID'yi sayıya çevir
+            String newNote = noteTextField.getText(); // Yeni notu al
+            if (newNote.isEmpty()) {
+                System.out.println("Lütfen güncellemek için geçerli bir not girin.");
+                return;
+            }
+            
+            // Güncelleme işlemini burada gerçekleştirin
+            Note updatedNote = new Note(id, newNote);
+            noteDao.update(updatedNote);  // SQLite işlemi
+            System.out.println("Not güncellendi.");
+            refreshNotes();  // Güncellenmiş notları yeniden listele
+        } catch (NumberFormatException e) {
+            System.out.println("Geçersiz bir ID girildi.");
+        }
+    }
+
+    private void deleteNote() {
+        String idInput = idTextField.getText();  // Kullanıcıdan ID'yi al
+        if (idInput.isEmpty()) {
+            System.out.println("Lütfen geçerli bir ID girin.");
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(idInput);  // ID'yi sayıya çevir
+            
+            // Silme işlemini burada gerçekleştirin
+            noteDao.delete(id);  // SQLite işlemi
+            System.out.println("Not silindi.");
+            refreshNotes();  // Silinen notu listeden çıkar
+        } catch (NumberFormatException e) {
+            System.out.println("Geçersiz bir ID girildi.");
+        }
+    }
+
+    private void refreshNotes() {
+        notesListView.getItems().clear();  // Eski listeyi temizle
+        for (Note note : noteDao.getAllNotes()) {
+            notesListView.getItems().add(note.getContent());
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}

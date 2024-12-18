@@ -1,0 +1,12 @@
+INDEX VERSION 1.134+C:\Users\calis\Downloads\yazılım mimarisi\yazılım mimarisi\yazılım mimarisi\.metadata\.plugins\org.eclipse.jdt.core
+3778077582.index
+487973983.index
+1865797976.index
+3408457673.index
+2825647713.index
+3490410309.index
+3997583121.index
+2462824760.index
+2251649035.index
+1195920508.index
+274075019.index

@@ -1,0 +1,45 @@
+package main;
+
+import db.Database;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+
+public class App extends Application {
+
+    public static void main(String[] args) {
+        // JavaFX uygulamasını başlat
+        launch(args);  // JavaFX uygulaması başlatılıyor
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        // Veritabanı bağlantısını başlat
+        Database db = Database.getInstance();
+
+        // CRUD işlemleri örnekleri
+        db.addNote("First Note", "This is the content of the first note.");
+        db.addNote("Second Note", "This is the content of the second note.");
+
+        // Veritabanındaki notları yazdır
+        db.getNotes().forEach(System.out::println);
+
+        // GUI (JavaFX) Arayüzü
+        Button btn = new Button("Close Application");
+        btn.setOnAction(e -> {
+            db.close();  // Veritabanı bağlantısını kapat
+            System.exit(0);  // Uygulamayı kapat
+        });
+
+        StackPane root = new StackPane();
+        root.getChildren().add(btn);
+
+        Scene scene = new Scene(root, 300, 250);
+
+        primaryStage.setTitle("Personal Notebook");
+        primaryStage.setScene(scene);
+        primaryStage.show();  // JavaFX penceresini aç
+    }
+}

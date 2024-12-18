@@ -1,0 +1,60 @@
+package models;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class NoteDao {
+    private Connection connection;
+
+    public NoteDao(Connection connection) {
+        this.connection = connection;
+    }
+
+    // Notları veritabanından al
+    public List<Note> getAllNotes() throws SQLException {
+        List<Note> notes = new ArrayList<>();
+        String query = "SELECT * FROM notes";
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+
+        while (resultSet.next()) {
+            int id = resultSet.getInt("id");
+            String title = resultSet.getString("title");
+            String content = resultSet.getString("content");
+
+            // Note(int id, String title, String content) yapıcı metodunu kullan
+            Note note = new Note(id, title, content);
+            notes.add(note);
+        }
+
+        return notes;
+    }
+
+    // Yeni not ekle
+    public void addNote(Note note) throws SQLException {
+        String query = "INSERT INTO notes (title, content) VALUES (?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, note.getTitle());
+        preparedStatement.setString(2, note.getContent());
+        preparedStatement.executeUpdate();
+    }
+
+    // Notu güncelle
+    public void updateNote(Note note) throws SQLException {
+        String query = "UPDATE notes SET title = ?, content = ? WHERE id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, note.getTitle());
+        preparedStatement.setString(2, note.getContent());
+        preparedStatement.setInt(3, note.getId());
+        preparedStatement.executeUpdate();
+    }
+
+    // Notu sil
+    public void deleteNote(int noteId) throws SQLException {
+        String query = "DELETE FROM notes WHERE id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, noteId);
+        preparedStatement.executeUpdate();
+    }
+}

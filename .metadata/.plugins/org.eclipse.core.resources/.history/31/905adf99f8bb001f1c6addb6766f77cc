@@ -1,0 +1,15 @@
+package main;
+
+import db.Database;
+import javafx.application.Application;
+import views.MainView;
+
+public class App {
+    public static void main(String[] args) {
+        // Initialize Database
+        Database.getInstance();
+
+        // Launch GUI
+        Application.launch(MainView.class, args);
+    }
+}
